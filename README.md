@@ -1,1 +1,1 @@
-# Pasijans trenutna faza rada: Glavni Menu
+# Pasijans trenutna faza rada: Podloga za igru

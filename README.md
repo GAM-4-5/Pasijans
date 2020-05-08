@@ -1,1 +1,1 @@
-# Pasijans trenutna faza rada: Podloga za igru
+# Pasijans trenutna faza rada: Otklanjanje poteškoća

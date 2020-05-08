@@ -1,4 +1,4 @@
-      from tkinter import *
+from tkinter import *
 import webbrowser
 import random
 from PIL import Image, ImageTk
@@ -37,44 +37,279 @@ class Play(Toplevel, object):
         #1 karta
         self.card1=Radiobutton(self.frame, text="draw 1 card", variable=self.cards, value=1)
         self.card1.pack()
+        #gumb za početak igre
         self.start=Button(self.frame, text="start", command=self.start)
         self.start.pack()
     def start(self):
-        # u slučaju da opcija nije odbrana start gumb nema funkciju
-        if self.cards!=0:
-            self.new=Toplevel()
-            game=Game(self.new)
+        #novi prozor u kojem je igra
+        game=Game(self.cards)
             
 
-#prozorčić za igru
+#prozor za igru
 class Game(Toplevel, object):
-    def __init__(self, master):
-        self.master=master
+    def __init__(self, cards):
+        self.master=Toplevel()
+        self.cards=cards
         self.master.title("Pasijans")
         self.frame=Frame(self.master, width=720, height=600)
         self.frame.pack()
         #lista svih karata: slovo označava grupu,a broj broj karte od asa do kralja
-        self.list=["s01", "s02", "s03", "s04", "s05", "s06", "s07", "s08", "s09", "s10", "s11", "s12", "s13",\
-                   "h01", "h02", "h03", "h04", "h05", "h06", "h07", "h08", "h09", "h10", "h11", "h12", "h13",\
-                   "d01", "d02", "d03", "d04", "d05", "d06", "d07", "d08", "d09", "d10", "d11", "d12", "d13",\
-                   "c01", "c02", "c03", "c04", "c05", "c06", "c07", "c08", "c09", "c10", "c11", "c12", "c13"]
+        self.list=["bs01", "bs02", "bs03", "bs04", "bs05", "bs06", "bs07", "bs08", "bs09", "bs10", "bs11", "bs12", "bs13",\
+                   "rh01", "rh02", "rh03", "rh04", "rh05", "rh06", "rh07", "rh08", "rh09", "rh10", "rh11", "rh12", "rh13",\
+                   "rd01", "rd02", "rd03", "rd04", "rd05", "rd06", "rd07", "rd08", "rd09", "rd10", "rd11", "rd12", "rd13",\
+                   "bc01", "bc02", "bc03", "bc04", "bc05", "bc06", "bc07", "bc08", "bc09", "bc10", "bc11", "bc12", "bc13"]
+        #slika karte koja je okrenuta na poleđinu
+        self.cardb=Image.open("cardb.png")
+        self.cardb=self.cardb.resize((70,100), Image.ANTIALIAS)
         # stvaranje podloge s mjerama i točno pozicionirnim kartama
-        rows=[[0 for i in range (13)]for j in range (7)]
-        y=140
+        self.rows=[[]for j in range (7)]
+        y=115
         for i in range (0, 7):
             b=7-i
-            y+=10
+            y+=20
             x=490
             for j in range (0, b):
                 k=random.choice(self.list)
-                c=Button(self.frame, text=k)
-                img=Image.open(k+".png")
-                image=ImageTk.PhotoImage(img, master=self.master)
-                c.configure(image=image)
-                c.place(x=x, y=y)
-                rows[j][i]=c
+                self.list.remove(k)
+                #ime/tekst karte je povezan s nazivom slike te iste karte
+                img=Image.open(k[1:]+".png")
+                image=ImageTk.PhotoImage(img, master=self.frame)
+                c=Button(self.frame, text=k, image=image, command=lambda l=k : self.rowcards(l))
+                c.image=image
+                c.place(x=x, y=y, height=100, width=70)
+                self.rows[j].append(c)
                 x-=80
+        #isključivanje svih karata koje nisu na zadnjem mjestu
         for i in range (0, 7):
-            for j in range (0, 12):
-                if rows[i][j]!=0 and rows[i][j+1]!=0:
-                    rows[i][j].configure(state=DISABLED)
+            for j in range (len(self.rows[i])):
+                if self.rows[i][j]!=self.rows[i][-1]:
+                    image=ImageTk.PhotoImage(self.cardb, master=self.frame)
+                    self.rows[i][j].configure(state=DISABLED, image=image)
+                    self.rows[i][j].image=image
+        #4 seta za slaganje karata
+        self.sets=[[] for j in range (4)]
+        #špil s okrenutim i neokrenutim kartama
+        self.deck=[[], []]
+        #gumb za okrenut špil
+        self.re=Button(self.frame, text="okreni špil", command=lambda: self.shuffle())
+        self.re.place(x=570, y=10, height=100, width=70)
+        self.deck[0].append(self.re)
+        #postavljanje špila
+        for i in range (len(self.list)):
+            k=random.choice(self.list)
+            self.list.remove(k)
+            image=ImageTk.PhotoImage(self.cardb, master=self.frame)
+            c=Button(self.master, text=k, image=image)
+            c.image=image
+            c.place(x=570, y=10, height=100, width=70)
+            c.lift()
+            self.deck[0].append(c)
+            c.configure(command=lambda l=c: self.deckc(l))
+    #naredba za neokrenute karte u špilu, okreću se i dobivaju drugu naredbu
+    def deckc(self, c):
+            k=c.cget("text")
+            self.deck[0].remove(c)
+            self.deck[1].append(c)
+            c.place_forget()
+            c.place(x=490, y=10, height=100, width=70)
+            img=Image.open(k[1:]+".png")
+            image=ImageTk.PhotoImage(img, master=self.frame)
+            c.configure(image=image, command=lambda l=c: self.deckcard(c))
+            c.image=image
+            c.lift()
+
+    #naredba za okrenute karte u špilu                   
+    def deckcard (self, c):
+            k=c.cget("text")
+            #ako je karta as odmah ide u prvi set složenih karata koji je prazan
+            if k[2:4]=="01":
+                for i in range (4):
+                    if self.sets[i]==[]:
+                        self.deck[1].remove(c)
+                        self.sets[i].append(c)
+                        c.configure(command=lambda: self.setcards(k))
+                        c.place_forget()
+                        c.place(x=(10+i*80), y=10, height=100, width=70)
+                        c.lift()
+                        return
+
+            else:
+                #ako karta može biti spremljena u set
+                for i in range (4):
+                    if self.sets[i]!=[]:
+                        s=self.sets[i][0].cget("text")
+                        #karte su iste vrste
+                        if s[1]==k[1]:
+                            s=self.sets[i][-1].cget("text")
+                            #broj posljednje karte mora biti za 1 manji od trenutne karte
+                            if (int(s[2:4])+1)==int(k[2:4]):
+                                self.deck[1].remove(c)
+                                self.sets[i].append(c)
+                                c.configure(command=lambda: self.setcards(k))
+                                c.place_forget()
+                                c.place(x=(10+i*80), y=10, height=100, width=70)
+                                c.lift()
+                                return
+                            else:
+                                #u slučaju da posljenja karta u setu nije za jedan manja od trenutne
+                                break
+                           
+                #ako karta može biti stavljena u neki od redova
+                for i in range (7):
+                    if self.rows[i]!=[]:
+                        s=self.rows[i][-1].cget("text")
+                        # u slučaju da je karta kralj ona ide na slobodni red
+                        if k[2:4]=="13":
+                            if self.rows[i]==[]:
+                                self.deck[1].remove(c)
+                                self.rows[i].append(c)
+                                c.configure(command=lambda: self.rowcards(k))
+                                c.place_forget()
+                                c.place(x=(490-i*80), y=135, height=100, width=70)
+                                return
+                        #karta nije jednake boje kao posljednja u redu i njezin broj je za jedan veći
+                        elif k[0]!=s[0] and int(s[2:4])==(int(k[2:4])+1):
+                            self.deck[1].remove(c)
+                            self.rows[i].append(c)
+                            c.configure(command=lambda l=k: self.rowcards(l))
+                            c.place_forget()
+                            c.place(x=(490-i*80), y=(115+len(self.rows[i])*20), height=100, width=70)
+
+    #naredba za karte u redovima                
+    def rowcards (self, k):
+            #lociranje karte pomoću teksta
+             for i in range (7):
+                for j in range (len(self.rows[i])):
+                    if k==self.rows[i][j].cget("text"):
+                        c=self.rows[i][j]
+                        r=i
+                        m=j
+      
+             #ako je karta as, isti princip kao i prije
+             for i in range (4):
+                  if k[2:4]=="01":
+                       if self.sets[i]==[]:
+                          self.rows[r].remove(c)
+                          self.sets[i].append(c)
+                          c.configure(command=lambda l=k: self.setcards(l))
+                          c.place_forget()
+                          c.place(x=(10+i*80), y=10, height=100, width=70)
+                          #ako je karta prije isključena uključuje se i dobiva sliku
+                          if self.rows[r]!=[]:
+                             if self.rows[r][m-1]["state"]=="disabled":
+                                 img=Image.open(self.rows[r][m-1].cget("text")[1:]+".png")
+                                 image=ImageTk.PhotoImage(img, master=self.frame)
+                                 self.rows[r][m-1].configure(state=ACTIVE, image=image)
+                                 self.rows[r][m-1].image=image
+                                 return
+                  #karta ide u set
+                  elif self.sets[i]!=[]:
+                       s=self.sets[i][0].cget("text")
+                       if s[1]==k[1]:
+                            s=self.sets[i][-1].cget("text")
+                            #broj posljednje karte mora biti za 1 manji od trenutne karte
+                            if (int(s[2:4])+1)==int(k[2:4]):
+                                self.rows[r].remove(c)
+                                self.sets[i].append(c)
+                                c.configure(command=lambda l=k: self.setcards(l))
+                                c.place_forget()
+                                c.place(x=(10+i*80), y=10, height=100, width=70)
+                                c.lift()
+                                #ako je karta prije isključena uključuje se i dobiva sliku
+                                if self.rows[r]!=[]:
+                                    if self.rows[r][m-1]["state"]=="disabled":
+                                         img=Image.open(self.rows[r][m-1].cget("text")[1:]+".png")
+                                         image=ImageTk.PhotoImage(img, master=self.frame)
+                                         self.rows[r][m-1].configure(state=ACTIVE, image=image)
+                                         self.rows[r][m-1].image=image
+
+                                    
+
+             #ako karta može ići u jedan od redova    
+             for i in range (7):
+                    #ako je karta kralj
+                    if k[2:4]=="13":
+                        if self.rows[i]==[]:
+                            self.rows[r].remove(c)
+                            self.rows[i].append(c)
+                            c.configure(command=lambda l=k: self.rowcards(l))
+                            c.place_forget()
+                            c.place(x=(490-i*80), y=135, height=100, width=70)
+                            c.lift()
+                            #ako je karta prije isključena uključuje se i dobiva sliku
+                            if self.rows[r]!=[]:
+                                    if self.rows[r][m-1]["state"]=="disabled":
+                                         img=Image.open(self.rows[r][m-1].cget("text")[1:]+".png")
+                                         image=ImageTk.PhotoImage(img, master=self.frame)
+                                         self.rows[r][m-1].configure(state=ACTIVE, image=image)
+                                         self.rows[r][m-1].image=image
+                                         return
+                    #karta nije jednake boje kao posljednja u redu i njezin broj je za jedan veći
+                    if self.rows[i]!=[]:
+                        s=self.rows[i][-1].cget("text")
+                        if k[0]!=s[0] and int(s[2:4])==(int(k[2:4])+1):
+                            for j in self.rows[r][self.rows[r].index(c):]:
+                                self.rows[r].remove(j)
+                                self.rows[i].append(j)
+                                j.configure(command=lambda l=k: self.rowcards(l))
+                                j.place_forget()
+                                j.place(x=(490-i*80), y=(115+len(self.rows[i])*20), height=100, width=70)
+                                j.lift()
+                            #ako je karta prije isključena uključuje se i dobiva sliku
+                            if self.rows[r]!=[]:
+                                if self.rows[r][m-1]["state"]=="disabled":
+                                    img=Image.open(self.rows[r][m-1].cget("text")[1:]+".png")
+                                    image=ImageTk.PhotoImage(img, master=self.frame)
+                                    self.rows[r][m-1].configure(state=ACTIVE, image=image)
+                                    self.rows[r][m-1].image=image
+                                    return
+             
+                                        
+    def setcards(self, k):
+            #lociranje karte pomoću teksta
+            for i in self.sets:
+                if i!=[]:
+                    if i[0]==k[0]:
+                        c=i[-1]
+                        r=self.sets.index[i]
+                        break
+            #karta iz seta jedino može ići u jedan od redova
+            if k[2:4]=="13":
+                #ako je karta kralj
+                for i in range (7):
+                    if self.rows[i]==[]:
+                        self.sets[r].remove(c)
+                        self.rows[i].append(c)
+                        c.configure(command=lambda: self.rowcards(k))
+                        c.place_forget()
+                        c.place(x=(490-i*80), y=130, height=100, width=70)
+                        c.lift()
+                    #karta nije jednake boje kao posljednja u redu i njezin broj je za jedan veći
+                    elif k[0]!=s[0] and int(s[2:4])==(int(k[2:4])+1):
+                        self.sets[r].remove(c)
+                        self.rows[i].append(c)
+                        c.configure(command=lambda: self.rowcards(k))
+                        c.place_forget()
+                        c.place(x=(490-i*80), y=(115+len(self.rows[i])*20), height=100, width=70)
+
+
+    def shuffle (self):
+        for i in self.deck[1]:
+            self.deck[1].remove(i)
+            self.deck[0].append(i)
+            image=ImageTk.PhotoImage(self.cardb, master=self.frame)
+            i.configure(command=lambda l=i : deckc(l), image=image)
+            i.place_forget()
+            i.place(x=570, y=10, height=100, width=70)
+            i.lift()
+        
+            
+            
+        
+                        
+            
+                        
+                        
+                
+pasijans=Menu()
+

@@ -1,0 +1,54 @@
+Ovo su kompletna pravila za Pasijans .
+
+Igrači
+1 igrača
+
+Špil
+Standardni 52-kartni špil.
+
+Cilj
+Izgradite sva četiri odijela od asa do kralja u zasebne hrpe.
+
+Postaviti
+Pomiješajte špil.
+
+Izvršite 28 karata u sedam stupova, na sljedeći način: Prva hrpa (slijeva nadesno) uključuje jednu kartu, druga hrpa sadrži dvije karte,
+treća hrpa uključuje tri karte, itd., Tako da posljednja hrpa ima sedam karata.
+
+Okrenite gornju karticu na svakom paletu prema gore, tako da ima 7 karta licem prema gore.
+
+Odmaknite preostale karte, stvarajući hrpu niza.
+
+Temelji
+Kada postanu dostupni, četiri se asa moraju igrati iznad tablice; to su četiri temelja. Karte istog odijela mogu se položiti na svakom
+asu u uzlaznom redu, od niske (2) do visoke (kralja).
+
+Neke računalne verzije Pasijansa, pa tako i ova omogućuju vam da karte premjestite natrag i naprijed između temelja i tablice.
+Ovo alternativno pravilo čini igru ​​lakšom pobjedom.
+
+Igranje na tablici
+Na tablici, karte se slažu silaznim redoslijedom, naizmjence boja. Uvijek postavite karte na tablici tako da svaka karta ispod nje
+ostaje djelomično vidljiva kako biste mogli reći koje su kartice u stupcu.
+
+Primjer: 9 srca može se igrati na 10 klubova ili 10 pik. 5 klubova može se igrati na 6 srca ili 6 dijamanata.
+
+Svaki put kad premjestite kartu iz jedne hrpe tablice u drugu, okrenite otkrivenu licem prema dolje prema gore. Karta je sada
+dostupna za premiještanje.
+
+Ako se prazni stupac u tablici, bilo koji vidljivi kralj (ili vidljivi kralj s ostalim karticama na vrhu) može se premjestiti da biste
+ispunili taj prostor.
+
+Igranje
+Okrećite karte iz špila jednu po jednu. Ako se karta koju okrenete može igrati (na temeljima ili na tablici), to možete učiniti. 
+Ako nije, dodajte je u policu za odbacivanje licem okrenutim licem prema gore. Samo karta na vrhu odbijene hrpe ostaje dostupna
+za premiještanje, dok njih tri na vrhu ostavite vidljivim.
+
+ALTERNATIVA: povucite prve tri karte iz špila i postavite ih na stolu prema gore tako da su vidljive sve tri karte. Ako se zadnja
+karta može premijestiti, to možete učiniti. Ako ne, uzmite sljedeće tri karte iz hrpe i položite ih licem prema gore na vrh karta 
+koje su prethodno okrenute. Kada dođete do kraja špila, karte okrenite licem prema gore. Nemojte miješati karte.
+
+Osvajanjem
+Možete osvojiti Pasijans izgradnjom svih četiri odijela od asa do kralja.
+
+NAPOMENA: u ovoj verziji pasijansa radnja je pojednostavljena, upravljate jedino klikom miša tako da ako kliknete na kartu koja se može 
+premijestiti ona će to učiniti tako da izabire najbolju opciju.
